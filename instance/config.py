@@ -1,3 +1,4 @@
+'''Application configuration file'''
 import os
 
 class Config(object):
@@ -23,7 +24,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
 
-app_config = {
+APP_CONFIG = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'staging': StagingConfig,
