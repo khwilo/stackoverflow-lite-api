@@ -43,3 +43,6 @@ htmlcov/
 
 # Ignore the environment files
 venv/
+
+# Ignore .vscode directory and its files
+.vscode/
