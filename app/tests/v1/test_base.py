@@ -2,7 +2,7 @@
 import unittest
 
 from app import create_app
-from app.api.v1.models import USERS
+from app.api.v1.user_model import USERS
 
 class BaseTestCase(unittest.TestCase):
     '''Base class for other test classes'''
