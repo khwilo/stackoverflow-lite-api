@@ -39,11 +39,11 @@ def create_app(config_name):
 
     @app.route('/auth/login', methods=['POST'])
     def user_login():
-        '''API endpoint for user login'''
+        '''API endpoint for the user login'''
         data = request.get_json()
         username = data['username']
         password = UserModel.generate_password_hash(data['password'])
-        
+
         response = jsonify({
             'status': 200,
             'data': [
