@@ -17,6 +17,10 @@ def user_registration():
         return make_response(jsonify({
             'message': 'USERNAME CANNOT BE EMPTY'
         }), 400)
+    if username.isdigit():
+        return make_response(jsonify({
+            'message': 'USERNAME CANNOT CONSIST OF DIGITS ONLY'
+        }), 400)
 
     # Create an instance of the user
     user = UserModel(username=username, email=email, password=password)
