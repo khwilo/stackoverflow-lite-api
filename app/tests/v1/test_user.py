@@ -28,3 +28,14 @@ class UserTestCase(BaseTestCase):
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(200, response_msg["status"])
         self.assertEqual("Logged in as john", response_msg["data"][0]["message"])
+
+    def test_empty_username(self):
+        '''Test the API cannot log in a user with an empty username'''
+        res = self.client().post(
+            '/auth/signup',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.empty_username)
+        )
+        self.assertEqual(res.status_code, 400)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual("USERNAME CANNOT BE EMPTY", response_msg["message"])
