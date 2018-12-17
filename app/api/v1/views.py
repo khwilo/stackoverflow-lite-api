@@ -11,19 +11,29 @@ def user_registration():
     # data = request.get_json()
     username = request.get_json()['username']
     email = request.get_json()['email']
-    password = UserModel.generate_password_hash(request.get_json()['password'])
+    password = request.get_json()['password']
 
     if not username or not username.split():
         return make_response(jsonify({
             'message': 'USERNAME CANNOT BE EMPTY'
         }), 400)
+
     if username.isdigit():
         return make_response(jsonify({
             'message': 'USERNAME CANNOT CONSIST OF DIGITS ONLY'
         }), 400)
 
+    if not password or not password.split():
+        return make_response(jsonify({
+            'message': 'PASSWORD CANNOT BE EMPTY'
+        }), 400)
+
     # Create an instance of the user
-    user = UserModel(username=username, email=email, password=password)
+    user = UserModel(
+        username=username,
+        email=email,
+        password=UserModel.generate_password_hash(password)
+    )
 
     UserModel.add_user(user.user_as_dict())
 
