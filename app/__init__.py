@@ -14,9 +14,9 @@ def create_app(config_name):
     @app.route('/auth/signup', methods=['POST'])
     def user_registration():
         '''API endpoint for user registration'''
-        username = request.args.get('username')
-        email = request.args.get('email')
-        password = request.args.get('password')
+        username = str(request.args.get('username'))
+        email = str(request.args.get('email'))
+        password = UserModel.generate_password_hash(str(request.args.get('password')))
 
         # Create an instance of the user
         user = UserModel(username=username, email=email, password=password)
