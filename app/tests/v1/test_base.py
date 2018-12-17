@@ -16,6 +16,8 @@ class BaseTestCase(unittest.TestCase):
         self.empty_username = dict(username="", email="john@example.com", password="12")
         self.digit_username = dict(username="1234", email="john@example.com", password="12")
 
+        self.empty_password = dict(username="test", email="test@example.com", password=" ")
+
     @staticmethod
     def get_accept_content_type_headers():
         '''Return the content type headers for the body'''

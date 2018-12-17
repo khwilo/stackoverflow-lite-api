@@ -52,3 +52,16 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 400)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual("USERNAME CANNOT CONSIST OF DIGITS ONLY", response_msg["message"])
+
+    def test_empty_password(self):
+        '''
+        Test the API cannot register a user with an empty password
+        '''
+        res = self.client().post(
+            '/auth/signup',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.empty_password)
+        )
+        self.assertEqual(res.status_code, 400)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual("PASSWORD CANNOT BE EMPTY", response_msg["message"])
