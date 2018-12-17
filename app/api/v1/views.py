@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, make_response
 
 from app.api.v1.models import UserModel
 
-AUTH = Blueprint("auth", __name__, url_prefix='/auth')
+AUTH = Blueprint("auth_sign_in", __name__, url_prefix='/auth')
 
 @AUTH.route('/signup', methods=['POST'])
 def user_registration():
@@ -46,4 +46,22 @@ def user_registration():
             }
         ]
     }), 201)
+    return response
+
+@AUTH.route('/login', methods=['POST'])
+def user_login():
+    '''API endpoint for the user login'''
+    data = request.get_json()
+    username = data['username']
+    password = UserModel.generate_password_hash(data['password'])
+
+    response = jsonify({
+        'status': 200,
+        'data': [
+            {
+                'message': 'Logged in as {}'.format(username)
+            }
+        ]
+    })
+    response.status_code = 200
     return response
