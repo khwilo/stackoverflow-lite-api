@@ -1,5 +1,4 @@
 '''This module represents the base test class'''
-import os
 import unittest
 
 from app import create_app
