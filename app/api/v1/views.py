@@ -62,14 +62,16 @@ def user_login():
             'message': "User with username '{}' doesn't exist!".format(username)
         }), 400)
 
-
-    response = jsonify({
-        'status': 200,
-        'data': [
-            {
-                'message': 'Logged in as {}'.format(username)
-            }
-        ]
-    })
-    response.status_code = 200
-    return response
+    if UserModel.verify_password_hash(password, current_user['password']):
+        return make_response(jsonify({
+            'status': 200,
+            'data': [
+                {
+                    'message': 'Logged in as {}'.format(username)
+                }
+            ]
+        }), 200)
+    else:
+        return make_response(jsonify({
+            'message': 'WRONG CREDENTIALS!'
+        }), 401)
