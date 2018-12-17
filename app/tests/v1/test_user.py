@@ -15,4 +15,4 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(201, response_msg["status"])
-        self.assertEqual("Create a user record", response_msg["data"][0]["message"])
+        self.assertEqual("Create user record", response_msg["data"][0]["message"])
