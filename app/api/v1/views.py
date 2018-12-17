@@ -51,9 +51,17 @@ def user_registration():
 @AUTH.route('/login', methods=['POST'])
 def user_login():
     '''API endpoint for the user login'''
-    data = request.get_json()
-    username = data['username']
-    password = UserModel.generate_password_hash(data['password'])
+    username = request.get_json()['username']
+    password = request.get_json()['password']
+
+
+    current_user = UserModel.get_user_by_username(username)
+
+    if not current_user:
+        return make_response(jsonify({
+            'message': "User with username '{}' doesn't exist!".format(username)
+        }), 400)
+
 
     response = jsonify({
         'status': 200,
