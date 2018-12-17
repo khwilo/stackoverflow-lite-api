@@ -1,4 +1,6 @@
 '''This module represents the user entity'''
+from passlib.hash import pbkdf2_sha256 as sha256
+
 USERS = [] # Data store for the users
 
 class UserModel:
@@ -12,6 +14,16 @@ class UserModel:
     def get_user_id(self):
         '''Fetch the user id'''
         return self.user_id
+
+    @staticmethod
+    def generate_password_hash(password):
+        '''Generate the hash of the password'''
+        return sha256.hash(password)
+
+    @staticmethod
+    def verify_password_hash(password, hashed_password):
+        '''Compared the password with its hashed value'''
+        return sha256.verify(password, hashed_password)
 
     @staticmethod
     def add_user(user):
