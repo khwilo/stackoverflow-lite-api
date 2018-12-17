@@ -8,11 +8,11 @@ from app.api.v1.models import USERS
 class BaseTestCase(unittest.TestCase):
     '''Base class for other test classes'''
     def setUp(self):
-        self.app    = create_app(config_name="testing")
+        self.app = create_app(config_name="testing")
         self.client = self.app.test_client
 
         self.user_regisration = dict(username="john", email="john@example.com", password="12345")
-        self.user_login       = dict(username="john", password="12345")
+        self.user_login = dict(username="john", password="12345")
 
     @staticmethod
     def get_accept_content_type_headers():
