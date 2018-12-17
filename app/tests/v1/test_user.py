@@ -10,7 +10,7 @@ class UserTestCase(BaseTestCase):
         res = self.client().post(
             '/auth/signup',
             headers=BaseTestCase.get_accept_content_type_headers(),
-            data=json.dumps(self.user_regisration)
+            data=json.dumps(self.user_registration)
         )
         self.assertEqual(res.status_code, 201)
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -19,6 +19,12 @@ class UserTestCase(BaseTestCase):
 
     def test_user_login(self):
         '''Test the API can log in a user'''
+        res = self.client().post(
+            '/auth/signup',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.user_registration)
+        )
+        self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/auth/login',
             headers=BaseTestCase.get_accept_content_type_headers(),
@@ -65,3 +71,14 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 400)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual("PASSWORD CANNOT BE EMPTY", response_msg["message"])
+
+    def test_incorrect_username(self):
+        '''Test the API cannot log in a user who is not yet registered'''
+        res = self.client().post(
+            '/auth/login',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.incorrect_username)
+        )
+        self.assertEqual(res.status_code, 400)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual("User with username 'jane' doesn't exist!", response_msg["message"])
