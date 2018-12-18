@@ -39,7 +39,7 @@ def user_fetch_all_questions():
     questions = QuestionModel.get_all_questions()
     if questions == []:
         return make_response(jsonify({
-            'message': 'No question has been added yet'
+            'message': 'NO QUESTION HAS BEEN ADDED YET!'
         }), 404)
     return make_response(jsonify({
         'status': 200,
