@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, make_response
 
 from app.api.v1.user_model import UserModel
 
-AUTH = Blueprint("auth_sign_in", __name__, url_prefix='/auth')
+AUTH = Blueprint("auth", __name__, url_prefix='/auth')
 
 @AUTH.route('/signup', methods=['POST'])
 def user_registration():

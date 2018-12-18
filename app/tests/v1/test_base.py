@@ -3,6 +3,7 @@ import unittest
 
 from app import create_app
 from app.api.v1.user_model import USERS
+from app.api.v1.question_model import QUESTIONS
 
 class BaseTestCase(unittest.TestCase):
     '''Base class for other test classes'''
@@ -21,6 +22,8 @@ class BaseTestCase(unittest.TestCase):
         self.incorrect_username = dict(username="jane", password="12345")
         self.incorrect_password = dict(username="john", password="abcd")
 
+        self.question = dict(title="Test title", description="Test description", created_by="Test")
+
     @staticmethod
     def get_accept_content_type_headers():
         '''Return the content type headers for the body'''
@@ -31,6 +34,7 @@ class BaseTestCase(unittest.TestCase):
 
     def tearDown(self):
         del USERS[:]
+        del QUESTIONS[:]
 
 if __name__ == "__main__":
     unittest.main()
