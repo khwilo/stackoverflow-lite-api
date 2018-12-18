@@ -40,3 +40,31 @@ class QuestionTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 404)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual("NO QUESTION HAS BEEN ADDED YET!", response_msg["message"])
+
+    def test_fetch_one_question(self):
+        '''Test the API can fetch one question'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().get('/api/v1/questions/1')
+        self.assertEqual(res.status_code, 200)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(200, response_msg["status"])
+        self.assertTrue(response_msg["data"])
+
+    def test_incorrect_question_id(self):
+        '''Test the API cannot fetch a question with an incorrect id'''
+        res = self.client().get('/api/v1/questions/i')
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual("QUESTION ID MUST BE AN INTEGER VALUE", response_msg["message"])
+
+    def test_non_existent_question(self):
+        '''Test the API cannot a non-existent question'''
+        res = self.client().get('/api/v1/questions/2')
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual("QUESTION WITH ID '2' DOESN'T EXIST!", response_msg["message"])

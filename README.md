@@ -1,9 +1,6 @@
 # Stack Overflow Lite API
 
-[![Build Status](https://travis-ci.org/khwilo/stackoverflow-lite-api.svg?branch=ft-fetch-all-questions-162697938
-)](https://travis-ci.org/khwilo/stackoverflow-lite-api) [![Coverage Status](https://coveralls.io/repos/github/khwilo/stackoverflow-lite-api/badge.svg?branch=ft-fetch-all-questions-162697938
-)](https://coveralls.io/github/khwilo/stackoverflow-lite-api?branch=ft-fetch-all-questions-162697938
-)
+[![Build Status](https://travis-ci.org/khwilo/stackoverflow-lite-api.svg?branch=ft-fetch-one-question-162726218)](https://travis-ci.org/khwilo/stackoverflow-lite-api) [![Coverage Status](https://coveralls.io/repos/github/khwilo/stackoverflow-lite-api/badge.svg?branch=ft-fetch-one-question-162726218)](https://coveralls.io/github/khwilo/stackoverflow-lite-api?branch=ft-fetch-one-question-162726218)
 
 API endpoints for the [Stack Overflow Lite](https://khwilo.github.io/stackoverflow-lite/UI/) web application.
 
@@ -13,3 +10,4 @@ API endpoints for the [Stack Overflow Lite](https://khwilo.github.io/stackoverfl
 - `POST '/auth/login'` - Login a registered user
 - `POST '/api/v1/questions'` - Post a question
 - `GET '/api/v1/questions'` - Fetch all questions
+- `GET '/api/v1/questions/<questionId>'` - Fetch a specific question
