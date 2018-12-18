@@ -7,6 +7,7 @@ from instance.config import APP_CONFIG
 from app.api.v1.user_model import UserModel
 
 from app.api.v1.user_view import AUTH
+from app.api.v1.question_view import API
 
 def create_app(config_name):
     '''Instantiate the Flask application'''
@@ -14,4 +15,5 @@ def create_app(config_name):
     app.config.from_object(APP_CONFIG[config_name])
     app.config.from_pyfile('config.py')
     app.register_blueprint(AUTH)
+    app.register_blueprint(API)
     return app
