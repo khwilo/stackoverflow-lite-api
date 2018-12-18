@@ -45,3 +45,20 @@ def user_fetch_all_questions():
         'status': 200,
         'data': questions
     }), 200)
+
+@API.route('/questions/<question_id>', methods=['GET'])
+def fetch_one_question(question_id):
+    '''API endpoint for fetching one question'''
+    if question_id.isdigit():
+        question = QuestionModel.get_question_by_id(int(question_id))
+        if question == {}:
+            return make_response(jsonify({
+                'message': "QUESTION WITH ID '{}' DOESN'T EXIST!".format(question_id)
+            }), 404)
+        return make_response(jsonify({
+            'status': 200,
+            'data': [question]
+        }))
+    return make_response(jsonify({
+        'message': "QUESTION ID MUST BE AN INTEGER VALUE"
+    }), 400)
