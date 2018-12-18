@@ -32,3 +32,16 @@ def user_post_question():
             }
         ]
     }), 201)
+
+@API.route('/questions', methods=['GET'])
+def user_fetch_all_questions():
+    '''API endpoint for fetching all questions'''
+    questions = QuestionModel.get_all_questions()
+    if questions == []:
+        return make_response(jsonify({
+            'message': 'NO QUESTION HAS BEEN ADDED YET!'
+        }), 404)
+    return make_response(jsonify({
+        'status': 200,
+        'data': questions
+    }), 200)
