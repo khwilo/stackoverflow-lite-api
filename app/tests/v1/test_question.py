@@ -27,3 +27,16 @@ class QuestionTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         res = self.client().get('/api/v1/questions')
         self.assertEqual(res.status_code, 200)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(200, response_msg["status"])
+        self.assertTrue(response_msg["data"])
+
+    def test_fetch_empty_questions_record(self):
+        '''
+        Test the API returns formatted message when trying to
+        fetch questions from an empty record
+        '''
+        res = self.client().get('/api/v1/questions')
+        self.assertEqual(res.status_code, 404)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual("NO QUESTION HAS BEEN ADDED YET!", response_msg["message"])
