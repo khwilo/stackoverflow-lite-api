@@ -10,6 +10,8 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
+        self.app_context = self.app.app_context()
+        self.app_context.push()
 
         self.user_registration = dict(username="john", email="john@example.com", password="12345")
         self.user_login = dict(username="john", password="12345")
@@ -35,6 +37,7 @@ class BaseTestCase(unittest.TestCase):
     def tearDown(self):
         del USERS[:]
         del QUESTIONS[:]
+        self.app_context.pop()
 
 if __name__ == "__main__":
     unittest.main()
