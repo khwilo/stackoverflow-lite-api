@@ -68,3 +68,17 @@ class QuestionTestCase(BaseTestCase):
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 404)
         self.assertEqual("QUESTION WITH ID '2' DOESN'T EXIST!", response_msg["message"])
+
+    def test_delete_one_question(self):
+        '''Test the API can delete one question'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().delete('/api/v1/questions/1')
+        self.assertEqual(res.status_code, 200)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(response_msg["status"], 200)
+        self.assertEqual(response_msg["message"], "QUESTION WITH ID '1' HAS BEEN SUCCESSFULLY DELETED")
