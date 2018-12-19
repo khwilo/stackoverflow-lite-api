@@ -1,7 +1,7 @@
 '''This module represents the question view'''
 from flask import Blueprint, request, jsonify, make_response
 
-from app.api.v1.question_model import QuestionModel
+from app.api.v1.question_model import QuestionModel, QUESTIONS
 
 API = Blueprint("api", __name__, url_prefix='/api/v1')
 
@@ -59,6 +59,24 @@ def fetch_one_question(question_id):
             'status': 200,
             'data': [question]
         }))
+    return make_response(jsonify({
+        'message': "QUESTION ID MUST BE AN INTEGER VALUE"
+    }), 400)
+
+@API.route('/questions/<question_id>', methods=['DELETE'])
+def delete_one_question(question_id):
+    '''API endpoint for deleting one question'''
+    if question_id.isdigit():
+        question = QuestionModel.get_question_by_id(int(question_id))
+        if question == {}:
+            return make_response(jsonify({
+                'message': "QUESTION WITH ID '{}' DOESN'T EXIST!".format(question_id)
+            }), 404)
+        QUESTIONS.remove(question)
+        return make_response(jsonify({
+            'status': 200,
+            'message': "QUESTION WITH ID '{}' HAS BEEN SUCCESSFULLY DELETED".format(question_id)
+        }), 200)
     return make_response(jsonify({
         'message': "QUESTION ID MUST BE AN INTEGER VALUE"
     }), 400)
