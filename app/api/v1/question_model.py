@@ -35,12 +35,6 @@ class QuestionModel:
         '''Fetch all questions'''
         return QUESTIONS
 
-    @staticmethod
-    def delete_a_question_by_id(question_id):
-        '''Delete a question given its id'''
-        global QUESTIONS
-        QUESTIONS = list(filter(lambda question: question['question_id'] != question_id, QUESTIONS))
-
     def question_as_dict(self):
         '''Convert the question object into a dictionary'''
         return {
