@@ -26,6 +26,8 @@ class BaseTestCase(unittest.TestCase):
 
         self.question = dict(title="Test title", description="Test description", created_by="Test")
 
+        self.answer = dict(description="Test answer description")
+
     @staticmethod
     def get_accept_content_type_headers():
         '''Return the content type headers for the body'''
