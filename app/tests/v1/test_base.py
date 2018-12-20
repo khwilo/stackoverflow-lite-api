@@ -2,8 +2,8 @@
 import unittest
 
 from app import create_app
-from app.api.v1.user_model import USERS
-from app.api.v1.question_model import QUESTIONS
+from app.api.v1.models.user_model import USERS
+from app.api.v1.models.question_model import QUESTIONS
 
 class BaseTestCase(unittest.TestCase):
     '''Base class for other test classes'''
@@ -25,6 +25,8 @@ class BaseTestCase(unittest.TestCase):
         self.incorrect_password = dict(username="john", password="abcd")
 
         self.question = dict(title="Test title", description="Test description", created_by="Test")
+
+        self.answer = dict(description="Test answer description")
 
     @staticmethod
     def get_accept_content_type_headers():

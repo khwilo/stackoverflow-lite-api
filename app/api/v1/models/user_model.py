@@ -52,18 +52,3 @@ class UserModel:
     def get_all_users():
         '''Fetch all users'''
         return USERS
-
-    @staticmethod
-    def delete_a_user_by_id(user_id):
-        '''Delete a given user given a user id'''
-        global USERS
-        USERS = list(filter(lambda user: user['user_id'] != user_id, USERS))
-
-    def user_as_dict(self):
-        '''Convert the user object into a dictionary'''
-        return {
-            'user_id' : self.user_id,
-            'username': self.username,
-            'email'   : self.email,
-            'password': self.password
-        }

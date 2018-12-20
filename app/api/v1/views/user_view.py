@@ -1,7 +1,8 @@
 '''This module represents the user view'''
 from flask import Blueprint, request, jsonify, make_response
 
-from app.api.v1.user_model import UserModel
+from app.api.utils.serializer import serialize
+from app.api.v1.models.user_model import UserModel
 
 AUTH = Blueprint("auth", __name__, url_prefix='/auth')
 
@@ -35,7 +36,7 @@ def user_registration():
         password=UserModel.generate_password_hash(password)
     )
 
-    UserModel.add_user(user.user_as_dict())
+    UserModel.add_user(serialize(user))
 
     response = make_response(jsonify({
         'status': 201,
@@ -71,7 +72,7 @@ def user_login():
                 }
             ]
         }), 200)
-    else:
-        return make_response(jsonify({
-            'message': 'WRONG CREDENTIALS!'
-        }), 401)
+
+    return make_response(jsonify({
+        'message': 'WRONG CREDENTIALS!'
+    }), 401)

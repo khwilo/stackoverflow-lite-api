@@ -12,3 +12,4 @@ API endpoints for the [Stack Overflow Lite](https://khwilo.github.io/stackoverfl
 - `GET '/api/v1/questions'` - Fetch all questions
 - `GET '/api/v1/questions/<questionId>'` - Fetch a specific question
 - `DELETE '/api/v1/questions/<questionId>'` - Delete a specific question
+- `POST '/api/v1/questions/<<questionId>/answers'`

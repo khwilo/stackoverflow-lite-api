@@ -1,7 +1,9 @@
 '''This module represents the question view'''
 from flask import Blueprint, request, jsonify, make_response
 
-from app.api.v1.question_model import QuestionModel, QUESTIONS
+from app.api.utils.serializer import serialize
+from app.api.v1.models.question_model import QuestionModel, QUESTIONS
+from app.api.v1.models.answer_model import AnswerModel
 
 API = Blueprint("api", __name__, url_prefix='/api/v1')
 
@@ -18,7 +20,7 @@ def user_post_question():
         created_by=created_by
     )
 
-    QuestionModel.add_questions(question.question_as_dict())
+    QuestionModel.add_questions(serialize(question))
 
     return make_response(jsonify({
         'status': 201,
@@ -77,6 +79,30 @@ def delete_one_question(question_id):
             'status': 200,
             'message': "QUESTION WITH ID '{}' HAS BEEN SUCCESSFULLY DELETED".format(question_id)
         }), 200)
+    return make_response(jsonify({
+        'message': "QUESTION ID MUST BE AN INTEGER VALUE"
+    }), 400)
+
+@API.route('/questions/<question_id>/answers', methods=['POST'])
+def post_answer(question_id):
+    '''API endpoint for posting an answer'''
+    description = request.get_json()['description']
+
+    answer = AnswerModel(
+        description=description
+    )
+
+    if question_id.isdigit():
+        question = QuestionModel.get_question_by_id(int(question_id))
+        if question == {}:
+            return make_response(jsonify({
+                'message': "QUESTION WITH ID '{}' DOESN'T EXIST!".format(question_id)
+            }), 404)
+        AnswerModel.add_answer(answer, question_id)
+        return make_response(jsonify({
+            'status': 201,
+            'data': [question]
+        }), 201)
     return make_response(jsonify({
         'message': "QUESTION ID MUST BE AN INTEGER VALUE"
     }), 400)
