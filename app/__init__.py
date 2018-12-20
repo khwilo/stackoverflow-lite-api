@@ -4,10 +4,10 @@ import json
 from flask import Flask, request, jsonify, abort, make_response
 
 from instance.config import APP_CONFIG
-from app.api.v1.user_model import UserModel
+from app.api.v1.models.user_model import UserModel
 
-from app.api.v1.user_view import AUTH
-from app.api.v1.question_view import API
+from app.api.v1.views.user_view import AUTH
+from app.api.v1.views.question_view import API
 
 def create_app(config_name):
     '''Instantiate the Flask application'''
