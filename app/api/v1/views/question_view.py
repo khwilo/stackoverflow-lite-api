@@ -98,4 +98,4 @@ def post_answer(question_id):
     return make_response(jsonify({
         'status': 201,
         'data': [question]
-    }))
+    }), 201)
