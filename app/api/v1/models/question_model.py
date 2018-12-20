@@ -5,12 +5,13 @@ QUESTIONS = [] # Data store for questions
 
 class QuestionModel:
     '''Entity representation for a question'''
-    def __init__(self, title, description, created_by):
+    def __init__(self, title, description, created_by, answers=None):
         self.question_id = len(QUESTIONS) + 1 # The question primary key
         self.title = title
         self.description = description
         self.created_by = created_by
         self.created_on = str(datetime.utcnow())
+        self.answers = [] if answers is None else answers
 
     def get_question_id(self):
         '''Fetch the question id'''
@@ -34,13 +35,3 @@ class QuestionModel:
     def get_all_questions():
         '''Fetch all questions'''
         return QUESTIONS
-
-    def question_as_dict(self):
-        '''Convert the question object into a dictionary'''
-        return {
-            'question_id': self.question_id,
-            'title': self.title,
-            'description': self.description,
-            'created_by': self.created_by,
-            'created_on': self.created_on
-        }
