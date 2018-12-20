@@ -102,3 +102,17 @@ class QuestionTestCase(BaseTestCase):
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 201)
         self.assertTrue(response_msg["data"][0]["answers"])
+
+    def test_answer_non_existent_question(self):
+        '''Test the API cannot post an answer to a non-existing question'''
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.answer)
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(
+            response_msg["message"],
+            "QUESTION WITH ID '1' DOESN'T EXIST!"
+        )
