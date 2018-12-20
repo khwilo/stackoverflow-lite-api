@@ -92,10 +92,17 @@ def post_answer(question_id):
         description=description
     )
 
-    question = QuestionModel.get_question_by_id(int(question_id))
-    AnswerModel.add_answer(answer, question_id)
-
+    if question_id.isdigit():
+        question = QuestionModel.get_question_by_id(int(question_id))
+        if question == {}:
+            return make_response(jsonify({
+                'message': "QUESTION WITH ID '{}' DOESN'T EXIST!".format(question_id)
+            }), 404)
+        AnswerModel.add_answer(answer, question_id)
+        return make_response(jsonify({
+            'status': 201,
+            'data': [question]
+        }), 201)
     return make_response(jsonify({
-        'status': 201,
-        'data': [question]
-    }), 201)
+        'message': "QUESTION ID MUST BE AN INTEGER VALUE"
+    }), 400)
