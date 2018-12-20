@@ -81,4 +81,24 @@ class QuestionTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(response_msg["status"], 200)
-        self.assertEqual(response_msg["message"], "QUESTION WITH ID '1' HAS BEEN SUCCESSFULLY DELETED")
+        self.assertEqual(
+            response_msg["message"],
+            "QUESTION WITH ID '1' HAS BEEN SUCCESSFULLY DELETED"
+        )
+
+    def test_post_answer(self):
+        '''Test the API can post an answer'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.answer)
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 201)
+        self.assertTrue(response_msg["data"][0]["answers"])
