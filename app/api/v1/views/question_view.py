@@ -87,11 +87,9 @@ def delete_one_question(question_id):
 def post_answer(question_id):
     '''API endpoint for posting an answer'''
     description = request.get_json()['description']
-    answered_by = request.get_json()['answered_by']
 
     answer = AnswerModel(
-        description=description,
-        answered_by=answered_by
+        description=description
     )
 
     question = QuestionModel.get_question_by_id(int(question_id))
