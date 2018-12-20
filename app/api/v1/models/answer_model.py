@@ -8,10 +8,10 @@ ANSWERS = [] # Data store for the answers
 
 class AnswerModel:
     '''Entity representation for an answer'''
-    def __init__(self, description, answered_by, accepted=None, rejected=None):
+    def __init__(self, description, answered_by=None, accepted=None, rejected=None):
         self.answer_id = len(ANSWERS) + 1
         self.description = description
-        self.answered_by = answered_by
+        self.answered_by = "" if answered_by is None else answered_by
         self.accepted = False if accepted is None else accepted
         self.rejected = False if rejected is None else rejected
         self.answered_on = str(datetime.utcnow())
