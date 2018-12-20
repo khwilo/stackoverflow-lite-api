@@ -1,7 +1,7 @@
 '''This module represents the user view'''
 from flask import Blueprint, request, jsonify, make_response
 
-from app.api.v1.user_model import UserModel
+from app.api.v1.models.user_model import UserModel
 
 AUTH = Blueprint("auth", __name__, url_prefix='/auth')
 

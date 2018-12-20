@@ -1,7 +1,7 @@
 '''This module represents the question view'''
 from flask import Blueprint, request, jsonify, make_response
 
-from app.api.v1.question_model import QuestionModel, QUESTIONS
+from app.api.v1.models.question_model import QuestionModel, QUESTIONS
 
 API = Blueprint("api", __name__, url_prefix='/api/v1')
 
