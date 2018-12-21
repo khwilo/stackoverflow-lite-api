@@ -1,13 +1,9 @@
 '''JSON serializer for objects'''
-from datetime import date, time
+from datetime import datetime
 
 def serialize(obj):
     '''Helper function to serialize an object'''
-    if isinstance(obj, date):
-        serial = obj.isoformat()
-        return serial
-
-    if isinstance(obj, time):
+    if isinstance(obj, datetime):
         serial = obj.isoformat()
         return serial
 
