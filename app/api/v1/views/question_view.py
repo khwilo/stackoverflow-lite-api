@@ -127,7 +127,7 @@ def update_answer(question_id, answer_id):
             answer["description"] = description
             return make_response(jsonify({
                 'data': answer,
-                'message': "CHANGES HAS BEEN SUCCESSFULLY BEEN DONE!"
+                'message': "ANSWER HAS BEEN UPDATED SUCCESSFULLY!"
             }))
         return make_response(jsonify({
             'message': "ANSWER ID MUST BE AN INTEGER VALUE!"
