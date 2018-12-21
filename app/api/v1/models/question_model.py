@@ -32,6 +32,16 @@ class QuestionModel:
         return question
 
     @staticmethod
+    def get_answer_by_id(question, answer_id):
+        '''Return an answer to a question by its id'''
+        answers = question.get("answers")
+        answer = {}
+        for index, _ in enumerate(answers):
+            if answers[index].get('answer_id') == answer_id:
+                answer = answers[index]
+        return answer
+
+    @staticmethod
     def get_all_questions():
         '''Fetch all questions'''
         return QUESTIONS
