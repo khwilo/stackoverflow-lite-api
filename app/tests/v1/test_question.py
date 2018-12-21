@@ -150,3 +150,20 @@ class QuestionTestCase(BaseTestCase):
             })
         )
         self.assertEqual(res.status_code, 404)
+
+    def test_incorrect_edit_answer(self):
+        '''Test the API cannot edit an answer with an incorrect ID'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().put(
+            '/api/v1/questions/1/answers/i',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps({
+                'description': 'Incorrect answer ID'
+            })
+        )
+        self.assertEqual(res.status_code, 400)
