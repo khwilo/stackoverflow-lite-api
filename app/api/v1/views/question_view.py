@@ -131,7 +131,7 @@ def update_answer(question_id, answer_id):
             }))
         return make_response(jsonify({
             'message': "ANSWER ID MUST BE AN INTEGER VALUE!"
-        }))
+        }), 400)
     return make_response(jsonify({
         'message': "QUESTION ID MUST BE AN INTEGER VALUE!"
     }), 400)
