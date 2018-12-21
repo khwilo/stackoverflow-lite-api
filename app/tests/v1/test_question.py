@@ -116,3 +116,26 @@ class QuestionTestCase(BaseTestCase):
             response_msg["message"],
             "QUESTION WITH ID '1' DOESN'T EXIST!"
         )
+
+    def test_edit_answer(self):
+        '''Test the API can edit an answer'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.answer)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().put(
+            '/api/v1/questions/1/answers/1',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps({
+                'description': "Updated test answer description"
+            })
+        )
+        self.assertEqual(res.status_code, 200)
