@@ -1,8 +1,11 @@
 '''This module represents the base test class'''
 import unittest
 
+from datetime import datetime
+
 from app import create_app
-from app.api.v1.models.user_model import USERS
+from app.api.utils.serializer import serialize
+from app.api.v1.models.user_model import USERS, UserModel
 from app.api.v1.models.question_model import QUESTIONS
 
 class BaseTestCase(unittest.TestCase):
@@ -24,9 +27,13 @@ class BaseTestCase(unittest.TestCase):
         self.incorrect_username = dict(username="jane", password="12345")
         self.incorrect_password = dict(username="john", password="abcd")
 
-        self.question = dict(title="Test title", description="Test description", created_by="Test")
+        self.question = dict(
+            title="Test title",
+            description="Test description",
+            created_by="Q_author"
+        )
 
-        self.answer = dict(description="Test answer description")
+        self.answer = dict(description="Test answer description", answered_by="A_author")
 
     @staticmethod
     def get_accept_content_type_headers():
@@ -35,6 +42,16 @@ class BaseTestCase(unittest.TestCase):
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+
+    def test_serialize_function(self):
+        '''Test the function serialize() converts an object to a dictionary'''
+        user = UserModel(username="Test", email="test@example.com", password="12345")
+        serialized_user_obj = serialize(user)
+        user_dict = dict(username="Test", email="test@example.com", password="12345")
+        self.assertTrue(serialized_user_obj, user_dict)
+        now_date = datetime.utcnow()
+        serialized_date = serialize(now_date)
+        self.assertTrue(serialized_date, now_date.isoformat())
 
     def tearDown(self):
         del USERS[:]

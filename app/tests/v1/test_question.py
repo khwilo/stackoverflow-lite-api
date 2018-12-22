@@ -116,3 +116,72 @@ class QuestionTestCase(BaseTestCase):
             response_msg["message"],
             "QUESTION WITH ID '1' DOESN'T EXIST!"
         )
+
+    def test_edit_answer(self):
+        '''Test the API can edit an answer'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.answer)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().put(
+            '/api/v1/questions/1/answers/1',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps({
+                'description': "Updated test answer description",
+                'accepted': True,
+                "rejected": False
+            })
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_msg["message"], "ANSWER HAS BEEN UPDATED SUCCESSFULLY!")
+
+    def test_edit_non_existent_answer(self):
+        '''Test the API cannot edit a non-existent answer'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().put(
+            '/api/v1/questions/1/answers/1',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps({
+                'description': 'Non-existent answer',
+                'accepted': False,
+                'rejected': True
+            })
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(response_msg["message"], "ANSWER WITH ID '1' DOESN'T EXIST!")
+
+    def test_incorrect_edit_answer(self):
+        '''Test the API cannot edit an answer with an incorrect ID'''
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().put(
+            '/api/v1/questions/1/answers/i',
+            headers=BaseTestCase.get_accept_content_type_headers(),
+            data=json.dumps({
+                'description': 'Incorrect answer ID',
+                'accepted': False,
+                'rejected': True
+            })
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(response_msg["message"], "ANSWER ID MUST BE AN INTEGER VALUE!")
