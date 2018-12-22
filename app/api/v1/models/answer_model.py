@@ -16,22 +16,6 @@ class AnswerModel:
         self.rejected = False if rejected is None else rejected
         self.answered_on = str(datetime.utcnow())
 
-    def get_answer_id(self):
-        '''Fetch the answer id'''
-        return self.answer_id
-
-    def is_accepted(self):
-        '''Return True/False for accepted'''
-        return self.accepted
-
-    def is_rejected(self):
-        '''Return True/False for rejected'''
-        return self.is_rejected
-
-    def get_time_of_answer(self):
-        '''Return the date the question was answered'''
-        return self.answered_on
-
     @staticmethod
     def add_answer(answer, question_id):
         '''Add a new answer to the data store'''
