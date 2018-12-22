@@ -113,6 +113,8 @@ def post_answer(question_id):
 def update_answer(question_id, answer_id):
     '''API endpoint for updating an answer'''
     description = request.get_json()['description']
+    accepted = request.get_json()['accepted']
+    rejected = request.get_json()['rejected']
 
     if question_id.isdigit():
         question = QuestionModel.get_question_by_id(int(question_id))
@@ -127,6 +129,8 @@ def update_answer(question_id, answer_id):
                     'message': "ANSWER WITH ID '{}' DOESN'T EXIST!".format(answer_id)
                 }), 404)
             answer["description"] = description
+            answer["accepted"] = accepted
+            answer["rejected"] = rejected
             return make_response(jsonify({
                 'data': answer,
                 'message': "ANSWER HAS BEEN UPDATED SUCCESSFULLY!"
