@@ -135,7 +135,9 @@ class QuestionTestCase(BaseTestCase):
             '/api/v1/questions/1/answers/1',
             headers=BaseTestCase.get_accept_content_type_headers(),
             data=json.dumps({
-                'description': "Updated test answer description"
+                'description': "Updated test answer description",
+                'accepted': True,
+                "rejected": False
             })
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -154,7 +156,9 @@ class QuestionTestCase(BaseTestCase):
             '/api/v1/questions/1/answers/1',
             headers=BaseTestCase.get_accept_content_type_headers(),
             data=json.dumps({
-                'description': 'Non-existent answer'
+                'description': 'Non-existent answer',
+                'accepted': False,
+                'rejected': True
             })
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -173,7 +177,9 @@ class QuestionTestCase(BaseTestCase):
             '/api/v1/questions/1/answers/i',
             headers=BaseTestCase.get_accept_content_type_headers(),
             data=json.dumps({
-                'description': 'Incorrect answer ID'
+                'description': 'Incorrect answer ID',
+                'accepted': False,
+                'rejected': True
             })
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
