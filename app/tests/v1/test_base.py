@@ -27,9 +27,13 @@ class BaseTestCase(unittest.TestCase):
         self.incorrect_username = dict(username="jane", password="12345")
         self.incorrect_password = dict(username="john", password="abcd")
 
-        self.question = dict(title="Test title", description="Test description", created_by="Test")
+        self.question = dict(
+            title="Test title",
+            description="Test description",
+            created_by="Q_author"
+        )
 
-        self.answer = dict(description="Test answer description")
+        self.answer = dict(description="Test answer description", answered_by="A_author")
 
     @staticmethod
     def get_accept_content_type_headers():
