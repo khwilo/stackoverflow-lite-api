@@ -189,37 +189,55 @@ class QuestionTestCase(BaseTestCase):
         )
 
     def test_edit_answer(self):
-        '''Test the API can edit an answer'''
+        '''
+        Test the API can edit an answer.
+        A user other the question author should edit the answer.
+        '''
         res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
-        access_token = response_msg["data"][0]["access_token"]
+        question_author_access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=self.get_authentication_headers(access_token),
+            headers=self.get_authentication_headers(question_author_access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
-        access_token = response_msg["data"][0]["access_token"]
+        answer_author_access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=self.get_authentication_headers(access_token),
+            headers=self.get_authentication_headers(answer_author_access_token),
             data=json.dumps(self.answer)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().put(
+        res = self.get_response_from_editing_answer(
             '/api/v1/questions/1/answers/1',
-            headers=self.get_authentication_headers(access_token),
-            data=json.dumps({
-                'description': "Updated test answer description",
-                'accepted': True,
-                "rejected": False
-            })
+            answer_author_access_token
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 200)
         self.assertEqual(response_msg["message"], "ANSWER HAS BEEN UPDATED SUCCESSFULLY!")
+        res = self.get_response_from_editing_answer(
+            '/api/v1/questions/1/answers/1',
+            question_author_access_token
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_msg["message"], "ANSWER HAS BEEN MARKED SUCCESSFULLY!")
+        res = self.get_response_from_user(
+            dict(username="test", email="test@example.com", password="abcde"),
+            dict(username="test", password="abcde")
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        other_author_access_token = response_msg["data"][0]["access_token"]
+        res = self.get_response_from_editing_answer(
+            '/api/v1/questions/1/answers/1',
+            other_author_access_token
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(response_msg["message"], "YOU AREN'T ALLOWED TO EDIT THE ANSWER!")
 
     def test_edit_non_existent_answer(self):
         '''Test the API cannot edit a non-existent answer'''
