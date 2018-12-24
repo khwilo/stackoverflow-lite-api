@@ -14,7 +14,7 @@ def user_post_question():
     '''API endpoint for posting questions'''
     title = request.get_json()['title']
     description = request.get_json()['description']
-    created_by = request.get_json()['created_by']
+    created_by = get_jwt_identity()
 
     question = QuestionModel(
         title=title,
@@ -93,7 +93,7 @@ def delete_one_question(question_id):
 def post_answer(question_id):
     '''API endpoint for posting an answer'''
     description = request.get_json()['description']
-    answered_by = request.get_json()['answered_by']
+    answered_by = get_jwt_identity()
 
     answer = AnswerModel(
         description=description,
@@ -106,6 +106,13 @@ def post_answer(question_id):
             return make_response(jsonify({
                 'message': "QUESTION WITH ID '{}' DOESN'T EXIST!".format(question_id)
             }), 404)
+        asked_by = question['created_by']
+
+        if asked_by == answered_by:
+            return make_response(jsonify({
+                'message': "YOU CAN'T ANSWER YOUR OWN QUESTION"
+            }), 401)
+
         AnswerModel.add_answer(answer, question_id)
         return make_response(jsonify({
             'status': 201,
