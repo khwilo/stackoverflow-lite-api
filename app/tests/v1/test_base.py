@@ -71,6 +71,19 @@ class BaseTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         return res
 
+    def get_response_from_editing_answer(self, url, access_token):
+        '''Return the response from editing an answer'''
+        res = self.client().put(
+            url,
+            headers=self.get_authentication_headers(access_token),
+            data=json.dumps({
+                'description': "Updated test answer description",
+                'accepted': True,
+                "rejected": False
+            })
+        )
+        return res
+
     def test_serialize_function(self):
         '''Test the function serialize() converts an object to a dictionary'''
         user = UserModel(username="Test", email="test@example.com", password="12345")
