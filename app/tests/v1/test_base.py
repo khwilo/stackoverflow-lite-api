@@ -1,4 +1,5 @@
 '''This module represents the base test class'''
+import json
 import unittest
 
 from datetime import datetime
@@ -35,13 +36,40 @@ class BaseTestCase(unittest.TestCase):
 
         self.answer = dict(description="Test answer description", answered_by="A_author")
 
-    @staticmethod
-    def get_accept_content_type_headers():
+    def get_accept_content_type_headers(self):
         '''Return the content type headers for the body'''
         return {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+
+    def get_authentication_headers(self, access_token):
+        '''Return the authentication header by providing the authorization field'''
+        authentication_headers = self.get_accept_content_type_headers()
+        authentication_headers['Authorization'] = "Bearer {}".format(access_token)
+        return authentication_headers
+
+    def get_response_from_user(self):
+        '''Return the response from a user login'''
+        res = self.client().post(
+            '/auth/signup',
+            headers=self.get_accept_content_type_headers(),
+            data=json.dumps(self.user_registration)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.client().post(
+            '/auth/login',
+            headers=self.get_accept_content_type_headers(),
+            data=json.dumps(self.user_login)
+        )
+        self.assertEqual(res.status_code, 200)
+        return res
+
+    def get_access_token(self):
+        '''Return the access token after user login'''
+        res = self.get_response_from_user()
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        return response_msg["data"][0]["access_token"]
 
     def test_serialize_function(self):
         '''Test the function serialize() converts an object to a dictionary'''
