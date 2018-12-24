@@ -7,7 +7,7 @@ class QuestionTestCase(BaseTestCase):
     '''Test definitions for a question'''
     def test_user_post_question(self):
         '''Test the API can post questions'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -22,7 +22,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_fetch_all_questions(self):
         '''Test the API can fetch all questions'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -45,7 +45,7 @@ class QuestionTestCase(BaseTestCase):
         Test the API returns formatted message when trying to
         fetch questions from an empty record
         '''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().get(
@@ -58,7 +58,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_fetch_one_question(self):
         '''Test the API can fetch one question'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -78,7 +78,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_incorrect_question_id(self):
         '''Test the API cannot fetch a question with an incorrect id'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().get(
@@ -91,7 +91,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_non_existent_question(self):
         '''Test the API cannot a non-existent question'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().get(
@@ -104,7 +104,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_delete_one_question(self):
         '''Test the API can delete one question'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -127,7 +127,33 @@ class QuestionTestCase(BaseTestCase):
 
     def test_post_answer(self):
         '''Test the API can post an answer'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(access_token),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=self.get_authentication_headers(access_token),
+            data=json.dumps(self.answer)
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 201)
+        self.assertTrue(response_msg["data"][0]["answers"])
+
+    def test_question_author_post_answer(self):
+        '''
+        Test the API doesn't allow the question author
+        to post an answer to his/her own question
+        '''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -142,12 +168,12 @@ class QuestionTestCase(BaseTestCase):
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
-        self.assertEqual(res.status_code, 201)
-        self.assertTrue(response_msg["data"][0]["answers"])
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(response_msg["message"], "YOU CAN'T ANSWER YOUR OWN QUESTION")
 
     def test_answer_non_existent_question(self):
         '''Test the API cannot post an answer to a non-existing question'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -164,7 +190,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_edit_answer(self):
         '''Test the API can edit an answer'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.user_registration, self.user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -173,6 +199,9 @@ class QuestionTestCase(BaseTestCase):
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions/1/answers',
             headers=self.get_authentication_headers(access_token),
@@ -194,7 +223,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_edit_non_existent_answer(self):
         '''Test the API cannot edit a non-existent answer'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
@@ -218,7 +247,7 @@ class QuestionTestCase(BaseTestCase):
 
     def test_incorrect_edit_answer(self):
         '''Test the API cannot edit an answer with an incorrect ID'''
-        res = self.get_response_from_user()
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
         response_msg = json.loads(res.data.decode("UTF-8"))
         access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
