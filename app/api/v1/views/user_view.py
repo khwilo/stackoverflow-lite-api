@@ -29,6 +29,13 @@ def user_registration():
             'message': 'PASSWORD CANNOT BE EMPTY'
         }), 400)
 
+    users = UserModel.get_all_users()
+
+    if next(filter(lambda u: u['username'] == username, users), None):
+        return make_response(jsonify({
+            'message': "A USER WITH USERNAME '{}' ALREADY EXISTS!".format(username)
+        }), 401)
+
     # Create an instance of the user
     user = UserModel(
         username=username,
