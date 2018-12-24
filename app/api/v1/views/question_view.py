@@ -1,5 +1,6 @@
 '''This module represents the question view'''
 from flask import Blueprint, request, jsonify, make_response
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.api.utils.serializer import serialize
 from app.api.v1.models.question_model import QuestionModel, QUESTIONS
@@ -8,6 +9,7 @@ from app.api.v1.models.answer_model import AnswerModel
 API = Blueprint("api", __name__, url_prefix='/api/v1')
 
 @API.route('/questions', methods=['POST'])
+@jwt_required
 def user_post_question():
     '''API endpoint for posting questions'''
     title = request.get_json()['title']
