@@ -1,6 +1,7 @@
 '''This module represents tests for the user entity'''
 import json
 
+from app.api.v1.models.user_model import USERS, UserModel
 from app.tests.v1.test_base import BaseTestCase
 
 class UserTestCase(BaseTestCase):
@@ -99,3 +100,12 @@ class UserTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 401)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual('WRONG CREDENTIALS!', response_msg["message"])
+
+    def test_get_user_by_id(self):
+        '''Test the method fetch a user by user id returns the correct user'''
+        self.client().post(
+            '/auth/signup',
+            headers=self.get_accept_content_type_headers(),
+            data=json.dumps(self.user_registration)
+        )
+        self.assertEqual(UserModel.get_user_by_id(1), USERS[0])
