@@ -168,7 +168,7 @@ class QuestionTestCase(BaseTestCase):
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, 403)
         self.assertEqual(response_msg["message"], "YOU CAN'T ANSWER YOUR OWN QUESTION")
 
     def test_answer_non_existent_question(self):

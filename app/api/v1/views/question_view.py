@@ -111,7 +111,7 @@ def post_answer(question_id):
         if asked_by == answered_by:
             return make_response(jsonify({
                 'message': "YOU CAN'T ANSWER YOUR OWN QUESTION"
-            }), 401)
+            }), 403)
 
         AnswerModel.add_answer(answer, question_id)
         return make_response(jsonify({
