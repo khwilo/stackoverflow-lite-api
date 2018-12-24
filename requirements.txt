@@ -4,6 +4,7 @@ attrs==18.2.0
 Click==7.0
 coverage==4.5.2
 Flask==1.0.2
+Flask-JWT-Extended==3.14.0
 isort==4.3.4
 itsdangerous==1.1.0
 Jinja2==2.10
@@ -16,6 +17,7 @@ passlib==1.7.1
 pathlib2==2.3.3
 pluggy==0.8.0
 py==1.7.0
+PyJWT==1.7.1
 pylint==2.2.2
 six==1.12.0
 typed-ast==1.1.0

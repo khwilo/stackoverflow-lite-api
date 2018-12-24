@@ -1,5 +1,6 @@
 '''This module represents the user view'''
 from flask import Blueprint, request, jsonify, make_response
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 from app.api.utils.serializer import serialize
 from app.api.v1.models.user_model import UserModel
@@ -9,7 +10,6 @@ AUTH = Blueprint("auth", __name__, url_prefix='/auth')
 @AUTH.route('/signup', methods=['POST'])
 def user_registration():
     '''API endpoint for user registration'''
-    # data = request.get_json()
     username = request.get_json()['username']
     email = request.get_json()['email']
     password = request.get_json()['password']
@@ -29,6 +29,13 @@ def user_registration():
             'message': 'PASSWORD CANNOT BE EMPTY'
         }), 400)
 
+    users = UserModel.get_all_users()
+
+    if next(filter(lambda u: u['username'] == username, users), None):
+        return make_response(jsonify({
+            'message': "A USER WITH USERNAME '{}' ALREADY EXISTS!".format(username)
+        }), 401)
+
     # Create an instance of the user
     user = UserModel(
         username=username,
@@ -38,12 +45,17 @@ def user_registration():
 
     UserModel.add_user(serialize(user))
 
+    access_token = create_access_token(identity=username)
+    refresh_token = create_refresh_token(identity=username)
+
     response = make_response(jsonify({
         'status': 201,
         'data': [
             {
                 'id': user.get_user_id(),
-                'message': "Create user record"
+                'message': "Create user record",
+                'access_token': access_token,
+                'refresh_token': refresh_token
             }
         ]
     }), 201)
@@ -64,11 +76,15 @@ def user_login():
         }), 400)
 
     if UserModel.verify_password_hash(password, current_user['password']):
+        access_token = create_access_token(identity=username)
+        refresh_token = create_refresh_token(identity=username)
         return make_response(jsonify({
             'status': 200,
             'data': [
                 {
-                    'message': 'Logged in as {}'.format(username)
+                    'message': 'Logged in as {}'.format(username),
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
                 }
             ]
         }), 200)

@@ -1,6 +1,7 @@
 '''This module represents tests for the user entity'''
 import json
 
+from app.api.v1.models.user_model import USERS, UserModel
 from app.tests.v1.test_base import BaseTestCase
 
 class UserTestCase(BaseTestCase):
@@ -9,7 +10,7 @@ class UserTestCase(BaseTestCase):
         '''Test the API can register a user'''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.user_registration)
         )
         self.assertEqual(res.status_code, 201)
@@ -21,13 +22,13 @@ class UserTestCase(BaseTestCase):
         '''Test the API can log in a user'''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.user_registration)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/auth/login',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.user_login)
         )
         self.assertEqual(res.status_code, 200)
@@ -39,7 +40,7 @@ class UserTestCase(BaseTestCase):
         '''Test the API cannot register a user with an empty username'''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.empty_username)
         )
         self.assertEqual(res.status_code, 400)
@@ -52,7 +53,7 @@ class UserTestCase(BaseTestCase):
         '''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.digit_username)
         )
         self.assertEqual(res.status_code, 400)
@@ -65,7 +66,7 @@ class UserTestCase(BaseTestCase):
         '''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.empty_password)
         )
         self.assertEqual(res.status_code, 400)
@@ -76,7 +77,7 @@ class UserTestCase(BaseTestCase):
         '''Test the API cannot log in a user who is not yet registered'''
         res = self.client().post(
             '/auth/login',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.incorrect_username)
         )
         self.assertEqual(res.status_code, 400)
@@ -87,15 +88,24 @@ class UserTestCase(BaseTestCase):
         '''Test the API cannot log in a user with an incorrect password'''
         res = self.client().post(
             '/auth/signup',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.user_registration)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/auth/login',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_accept_content_type_headers(),
             data=json.dumps(self.incorrect_password)
         )
         self.assertEqual(res.status_code, 401)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual('WRONG CREDENTIALS!', response_msg["message"])
+
+    def test_get_user_by_id(self):
+        '''Test the method fetch a user by user id returns the correct user'''
+        self.client().post(
+            '/auth/signup',
+            headers=self.get_accept_content_type_headers(),
+            data=json.dumps(self.user_registration)
+        )
+        self.assertEqual(UserModel.get_user_by_id(1), USERS[0])

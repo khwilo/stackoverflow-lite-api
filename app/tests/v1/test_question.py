@@ -7,9 +7,12 @@ class QuestionTestCase(BaseTestCase):
     '''Test definitions for a question'''
     def test_user_post_question(self):
         '''Test the API can post questions'''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
@@ -19,13 +22,19 @@ class QuestionTestCase(BaseTestCase):
 
     def test_fetch_all_questions(self):
         '''Test the API can fetch all questions'''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().get('/api/v1/questions')
+        res = self.client().get(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(access_token)
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(200, response_msg["status"])
@@ -36,20 +45,32 @@ class QuestionTestCase(BaseTestCase):
         Test the API returns formatted message when trying to
         fetch questions from an empty record
         '''
-        res = self.client().get('/api/v1/questions')
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().get(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(access_token)
+        )
         self.assertEqual(res.status_code, 404)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual("NO QUESTION HAS BEEN ADDED YET!", response_msg["message"])
 
     def test_fetch_one_question(self):
         '''Test the API can fetch one question'''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().get('/api/v1/questions/1')
+        res = self.client().get(
+            '/api/v1/questions/1',
+            headers=self.get_authentication_headers(access_token)
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(200, response_msg["status"])
@@ -57,27 +78,45 @@ class QuestionTestCase(BaseTestCase):
 
     def test_incorrect_question_id(self):
         '''Test the API cannot fetch a question with an incorrect id'''
-        res = self.client().get('/api/v1/questions/i')
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().get(
+            '/api/v1/questions/i',
+            headers=self.get_authentication_headers(access_token)
+        )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 400)
         self.assertEqual("QUESTION ID MUST BE AN INTEGER VALUE", response_msg["message"])
 
     def test_non_existent_question(self):
         '''Test the API cannot a non-existent question'''
-        res = self.client().get('/api/v1/questions/2')
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().get(
+            '/api/v1/questions/2',
+            headers=self.get_authentication_headers(access_token)
+        )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 404)
         self.assertEqual("QUESTION WITH ID '2' DOESN'T EXIST!", response_msg["message"])
 
     def test_delete_one_question(self):
         '''Test the API can delete one question'''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().delete('/api/v1/questions/1')
+        res = self.client().delete(
+            '/api/v1/questions/1',
+            headers=self.get_authentication_headers(access_token)
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(response_msg["status"], 200)
@@ -88,26 +127,58 @@ class QuestionTestCase(BaseTestCase):
 
     def test_post_answer(self):
         '''Test the API can post an answer'''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 201)
         self.assertTrue(response_msg["data"][0]["answers"])
 
-    def test_answer_non_existent_question(self):
-        '''Test the API cannot post an answer to a non-existing question'''
+    def test_question_author_post_answer(self):
+        '''
+        Test the API doesn't allow the question author
+        to post an answer to his/her own question
+        '''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().post(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(access_token),
+            data=json.dumps(self.question)
+        )
+        self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
+            data=json.dumps(self.answer)
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(response_msg["message"], "YOU CAN'T ANSWER YOUR OWN QUESTION")
+
+    def test_answer_non_existent_question(self):
+        '''Test the API cannot post an answer to a non-existing question'''
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
+        res = self.client().post(
+            '/api/v1/questions/1/answers',
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -118,43 +189,70 @@ class QuestionTestCase(BaseTestCase):
         )
 
     def test_edit_answer(self):
-        '''Test the API can edit an answer'''
+        '''
+        Test the API can edit an answer.
+        A user other the question author should edit the answer.
+        '''
+        res = self.get_response_from_user(self.user_registration, self.user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        question_author_access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(question_author_access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        answer_author_access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(answer_author_access_token),
             data=json.dumps(self.answer)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().put(
+        res = self.get_response_from_editing_answer(
             '/api/v1/questions/1/answers/1',
-            headers=BaseTestCase.get_accept_content_type_headers(),
-            data=json.dumps({
-                'description': "Updated test answer description",
-                'accepted': True,
-                "rejected": False
-            })
+            answer_author_access_token
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 200)
         self.assertEqual(response_msg["message"], "ANSWER HAS BEEN UPDATED SUCCESSFULLY!")
+        res = self.get_response_from_editing_answer(
+            '/api/v1/questions/1/answers/1',
+            question_author_access_token
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response_msg["message"], "ANSWER HAS BEEN MARKED SUCCESSFULLY!")
+        res = self.get_response_from_user(
+            dict(username="test", email="test@example.com", password="abcde"),
+            dict(username="test", password="abcde")
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        other_author_access_token = response_msg["data"][0]["access_token"]
+        res = self.get_response_from_editing_answer(
+            '/api/v1/questions/1/answers/1',
+            other_author_access_token
+        )
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(response_msg["message"], "YOU AREN'T ALLOWED TO EDIT THE ANSWER!")
 
     def test_edit_non_existent_answer(self):
         '''Test the API cannot edit a non-existent answer'''
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().put(
             '/api/v1/questions/1/answers/1',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps({
                 'description': 'Non-existent answer',
                 'accepted': False,
@@ -167,15 +265,18 @@ class QuestionTestCase(BaseTestCase):
 
     def test_incorrect_edit_answer(self):
         '''Test the API cannot edit an answer with an incorrect ID'''
+        res = self.get_response_from_user(self.new_user_registration, self.new_user_login)
+        response_msg = json.loads(res.data.decode("UTF-8"))
+        access_token = response_msg["data"][0]["access_token"]
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().put(
             '/api/v1/questions/1/answers/i',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(access_token),
             data=json.dumps({
                 'description': 'Incorrect answer ID',
                 'accepted': False,
