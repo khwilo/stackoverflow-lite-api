@@ -129,6 +129,7 @@ def update_answer(question_id, answer_id):
     description = request.get_json()['description']
     accepted = request.get_json()['accepted']
     rejected = request.get_json()['rejected']
+    current_user = get_jwt_identity()
 
     if question_id.isdigit():
         question = QuestionModel.get_question_by_id(int(question_id))
@@ -142,13 +143,24 @@ def update_answer(question_id, answer_id):
                 return make_response(jsonify({
                     'message': "ANSWER WITH ID '{}' DOESN'T EXIST!".format(answer_id)
                 }), 404)
-            answer["description"] = description
-            answer["accepted"] = accepted
-            answer["rejected"] = rejected
-            return make_response(jsonify({
-                'data': answer,
-                'message': "ANSWER HAS BEEN UPDATED SUCCESSFULLY!"
-            }))
+            answer_username = answer['answered_by']
+            response = None
+            if current_user == answer_username:
+                answer["description"] = description
+                response = make_response(jsonify({
+                    'message': "ANSWER HAS BEEN UPDATED SUCCESSFULLY!"
+                }))
+            elif current_user == question['created_by']:
+                answer["accepted"] = accepted
+                answer["rejected"] = rejected
+                response = make_response(jsonify({
+                    'message': "ANSWER HAS BEEN MARKED SUCCESSFULLY!"
+                }))
+            else:
+                response = make_response(jsonify({
+                    'message': "YOU AREN'T ALLOWED TO EDIT THE ANSWER!"
+                }), 403)
+            return response
         return make_response(jsonify({
             'message': "ANSWER ID MUST BE AN INTEGER VALUE!"
         }), 400)
