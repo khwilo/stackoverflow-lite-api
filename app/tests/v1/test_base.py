@@ -65,12 +65,6 @@ class BaseTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         return res
 
-    def get_access_token(self):
-        '''Return the access token after user login'''
-        res = self.get_response_from_user()
-        response_msg = json.loads(res.data.decode("UTF-8"))
-        return response_msg["data"][0]["access_token"]
-
     def test_serialize_function(self):
         '''Test the function serialize() converts an object to a dictionary'''
         user = UserModel(username="Test", email="test@example.com", password="12345")
