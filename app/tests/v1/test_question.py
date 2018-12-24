@@ -9,7 +9,7 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can post questions'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
@@ -21,11 +21,14 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can fetch all questions'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().get('/api/v1/questions')
+        res = self.client().get(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(200, response_msg["status"])
@@ -36,7 +39,10 @@ class QuestionTestCase(BaseTestCase):
         Test the API returns formatted message when trying to
         fetch questions from an empty record
         '''
-        res = self.client().get('/api/v1/questions')
+        res = self.client().get(
+            '/api/v1/questions',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         self.assertEqual(res.status_code, 404)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual("NO QUESTION HAS BEEN ADDED YET!", response_msg["message"])
@@ -45,11 +51,14 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can fetch one question'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().get('/api/v1/questions/1')
+        res = self.client().get(
+            '/api/v1/questions/1',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(200, response_msg["status"])
@@ -57,14 +66,20 @@ class QuestionTestCase(BaseTestCase):
 
     def test_incorrect_question_id(self):
         '''Test the API cannot fetch a question with an incorrect id'''
-        res = self.client().get('/api/v1/questions/i')
+        res = self.client().get(
+            '/api/v1/questions/i',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 400)
         self.assertEqual("QUESTION ID MUST BE AN INTEGER VALUE", response_msg["message"])
 
     def test_non_existent_question(self):
         '''Test the API cannot a non-existent question'''
-        res = self.client().get('/api/v1/questions/2')
+        res = self.client().get(
+            '/api/v1/questions/2',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(res.status_code, 404)
         self.assertEqual("QUESTION WITH ID '2' DOESN'T EXIST!", response_msg["message"])
@@ -73,11 +88,14 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can delete one question'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
-        res = self.client().delete('/api/v1/questions/1')
+        res = self.client().delete(
+            '/api/v1/questions/1',
+            headers=self.get_authentication_headers(self.get_access_token())
+        )
         self.assertEqual(res.status_code, 200)
         response_msg = json.loads(res.data.decode("UTF-8"))
         self.assertEqual(response_msg["status"], 200)
@@ -90,13 +108,13 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can post an answer'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -107,7 +125,7 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API cannot post an answer to a non-existing question'''
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.answer)
         )
         response_msg = json.loads(res.data.decode("UTF-8"))
@@ -121,19 +139,19 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API can edit an answer'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().post(
             '/api/v1/questions/1/answers',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.answer)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().put(
             '/api/v1/questions/1/answers/1',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps({
                 'description': "Updated test answer description",
                 'accepted': True,
@@ -148,13 +166,13 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API cannot edit a non-existent answer'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().put(
             '/api/v1/questions/1/answers/1',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps({
                 'description': 'Non-existent answer',
                 'accepted': False,
@@ -169,13 +187,13 @@ class QuestionTestCase(BaseTestCase):
         '''Test the API cannot edit an answer with an incorrect ID'''
         res = self.client().post(
             '/api/v1/questions',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps(self.question)
         )
         self.assertEqual(res.status_code, 201)
         res = self.client().put(
             '/api/v1/questions/1/answers/i',
-            headers=BaseTestCase.get_accept_content_type_headers(),
+            headers=self.get_authentication_headers(self.get_access_token()),
             data=json.dumps({
                 'description': 'Incorrect answer ID',
                 'accepted': False,
