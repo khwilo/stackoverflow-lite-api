@@ -38,6 +38,7 @@ def user_post_question():
     }), 201)
 
 @API.route('/questions', methods=['GET'])
+@jwt_required
 def user_fetch_all_questions():
     '''API endpoint for fetching all questions'''
     questions = QuestionModel.get_all_questions()
@@ -51,6 +52,7 @@ def user_fetch_all_questions():
     }), 200)
 
 @API.route('/questions/<question_id>', methods=['GET'])
+@jwt_required
 def fetch_one_question(question_id):
     '''API endpoint for fetching one question'''
     if question_id.isdigit():
@@ -68,6 +70,7 @@ def fetch_one_question(question_id):
     }), 400)
 
 @API.route('/questions/<question_id>', methods=['DELETE'])
+@jwt_required
 def delete_one_question(question_id):
     '''API endpoint for deleting one question'''
     if question_id.isdigit():
@@ -86,6 +89,7 @@ def delete_one_question(question_id):
     }), 400)
 
 @API.route('/questions/<question_id>/answers', methods=['POST'])
+@jwt_required
 def post_answer(question_id):
     '''API endpoint for posting an answer'''
     description = request.get_json()['description']
@@ -112,6 +116,7 @@ def post_answer(question_id):
     }), 400)
 
 @API.route('/questions/<question_id>/answers/<answer_id>', methods=['PUT'])
+@jwt_required
 def update_answer(question_id, answer_id):
     '''API endpoint for updating an answer'''
     description = request.get_json()['description']
