@@ -5,7 +5,7 @@ from app import create_app
 
 CONFIG_NAME = os.getenv('APP_SETTINGS')
 
-APP = create_app(CONFIG_NAME)
+APP = create_app(CONFIG_NAME) # Application name
 
 if __name__ == '__main__':
     APP.run()
